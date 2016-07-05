@@ -70,7 +70,9 @@ import java_cup.runtime.Symbol;
 %cup
 %state COMMENT
 
-COMMENT_TEXT= ([^\*\(\n]|[^\(\n]\*[^\)\n]|[^\*\n]\)|\([^\*\n])*
+COMMENT_TEXT=([^\*\(\n]|[^\(\n]\*[^\)\n]|[^\*\n]\)|\([^\*\n])*
+NON_NEWLINE_SPACE=[\ \t\b]
+
 %%
 
 <YYINITIAL,COMMENT>\n {}
@@ -83,21 +85,120 @@ COMMENT_TEXT= ([^\*\(\n]|[^\(\n]\*[^\)\n]|[^\*\n]\)|\([^\*\n])*
   yybegin(YYINITIAL);
 }
 <COMMENT>{COMMENT_TEXT} {
-  System.out.println("found some comment:" + yytext()); 
+ // System.out.println("found some comment:" + yytext()); 
 }
 
 <YYINITIAL>"=>"			{ /* Sample lexical rule for "=>" arrow.
                                      Further lexical rules should be defined
                                      here, after the last %% separator */
-                        return new Symbol(TokenConstants.DARROW); 
+  return new Symbol(TokenConstants.DARROW); 
 }
+<YYINITIAL>{NON_NEWLINE_SPACE}+ {
 
+}
 <YYINITIAL>"class" {
-                        return new Symbol(TokenConstants.CLASS); 
+  return new Symbol(TokenConstants.CLASS); 
 }
-
-.                               { /* This rule should be the very last
-                                     in your lexical specification and
-                                     will match match everything not
-                                     matched by other lexical rules. */
-                                  System.err.println("LEXER BUG - UNMATCHED: " + yytext()); }
+<YYINITIAL>"*" {
+  return new Symbol(TokenConstants.MULT); 
+}
+<YYINITIAL>"-" {
+  return new Symbol(TokenConstants.MINUS); 
+}
+<YYINITIAL>"/" {
+  return new Symbol(TokenConstants.DIV); 
+}
+<YYINITIAL>"+" {
+  return new Symbol(TokenConstants.PLUS); 
+}
+<YYINITIAL>":" {
+  return new Symbol(TokenConstants.COLON); 
+}
+<YYINITIAL>"inherits" {
+  return new Symbol(TokenConstants.INHERITS); 
+}
+<YYINITIAL>"pool" {
+  return new Symbol(TokenConstants.POOL); 
+}
+<YYINITIAL>"case" {
+  return new Symbol(TokenConstants.CASE); 
+}
+<YYINITIAL>"not" {
+  return new Symbol(TokenConstants.NOT); 
+}
+<YYINITIAL>"(" {
+  return new Symbol(TokenConstants.LPAREN); 
+}
+<YYINITIAL>")" {
+  return new Symbol(TokenConstants.RPAREN); 
+}
+<YYINITIAL>";" {
+  return new Symbol(TokenConstants.SEMI); 
+}
+<YYINITIAL>"<" {
+  return new Symbol(TokenConstants.LT); 
+}
+<YYINITIAL>"in" {
+  return new Symbol(TokenConstants.IN);
+}
+<YYINITIAL>"," {
+  return new Symbol(TokenConstants.COMMA);
+}
+<YYINITIAL>"fi" {
+  return new Symbol(TokenConstants.FI); 
+}
+<YYINITIAL>"loop" {
+  return new Symbol(TokenConstants.LOOP); 
+}
+<YYINITIAL>"<-" {
+  return new Symbol(TokenConstants.ASSIGN); 
+}
+<YYINITIAL>"if" {
+  return new Symbol(TokenConstants.IF); 
+}
+<YYINITIAL>"." {
+  return new Symbol(TokenConstants.DOT); 
+}
+<YYINITIAL>"<=" {
+  return new Symbol(TokenConstants.LE); 
+}
+<YYINITIAL>"of" {
+  return new Symbol(TokenConstants.OF); 
+}
+<YYINITIAL>"new"{
+  return new Symbol(TokenConstants.NEW);
+}
+<YYINITIAL>"is_void" {
+  return new Symbol(TokenConstants.PLUS); 
+}
+<YYINITIAL>"=" {
+  return new Symbol(TokenConstants.EQ); 
+}
+<YYINITIAL>"~" {
+  return new Symbol(TokenConstants.NEG); 
+}
+<YYINITIAL>"{" {
+  return new Symbol(TokenConstants.LBRACE); 
+}
+<YYINITIAL>"}" {
+  return new Symbol(TokenConstants.RBRACE); 
+}
+<YYINITIAL>"else" {
+  return new Symbol(TokenConstants.ELSE); 
+}
+<YYINITIAL>"while" {
+  return new Symbol(TokenConstants.WHILE); 
+}
+<YYINITIAL>"esac" {
+  return new Symbol(TokenConstants.ESAC); 
+}
+<YYINITIAL>"let" {
+  return new Symbol(TokenConstants.LET); 
+}
+<YYINITIAL>"then" {
+  return new Symbol(TokenConstants.THEN); 
+}
+. { 
+  System.err.println("LEXER BUG - UNMATCHED: " + yytext()); 
+  System.out.println("LEXER BUG - UNMATCHED: " + yytext()); 
+}
