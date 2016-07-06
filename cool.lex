@@ -101,7 +101,7 @@ DIGIT=[0-9]
 <YYINITIAL>{NON_NEWLINE_SPACE}+ {
 
 }
-<YYINITIAL>"class" {
+<YYINITIAL>[cC][lL][aA][sS][sS] {
   return new Symbol(TokenConstants.CLASS,yyline,1); 
 }
 <YYINITIAL>"*" {
@@ -119,16 +119,16 @@ DIGIT=[0-9]
 <YYINITIAL>":" {
   return new Symbol(TokenConstants.COLON,yyline,1); 
 }
-<YYINITIAL>"inherits" {
+<YYINITIAL>[iI][nN][hH][eE][rR][iI][tT][sS] {
   return new Symbol(TokenConstants.INHERITS,yyline,1); 
 }
-<YYINITIAL>"pool" {
+<YYINITIAL>[pP][oO][oO][lL] {
   return new Symbol(TokenConstants.POOL,yyline,1); 
 }
-<YYINITIAL>"case" {
+<YYINITIAL>[cC][aA][sS][eE] {
   return new Symbol(TokenConstants.CASE,yyline,1); 
 }
-<YYINITIAL>"not" {
+<YYINITIAL>[nN][oO][tT] {
   return new Symbol(TokenConstants.NOT,yyline,1); 
 }
 <YYINITIAL>"(" {
@@ -143,22 +143,22 @@ DIGIT=[0-9]
 <YYINITIAL>"<" {
   return new Symbol(TokenConstants.LT,yyline,1); 
 }
-<YYINITIAL>"in" {
+<YYINITIAL>[iI][nN] {
   return new Symbol(TokenConstants.IN,yyline,1);
 }
 <YYINITIAL>"," {
   return new Symbol(TokenConstants.COMMA,yyline,1);
 }
-<YYINITIAL>"fi" {
+<YYINITIAL>[fF][iI] {
   return new Symbol(TokenConstants.FI,yyline,1); 
 }
-<YYINITIAL>"loop" {
+<YYINITIAL>[lL][oO][oO][pP] {
   return new Symbol(TokenConstants.LOOP,yyline,1); 
 }
 <YYINITIAL>"<-" {
   return new Symbol(TokenConstants.ASSIGN,yyline,1); 
 }
-<YYINITIAL>"if" {
+<YYINITIAL>[iI][fF] {
   return new Symbol(TokenConstants.IF,yyline,1); 
 }
 <YYINITIAL>"." {
@@ -167,13 +167,13 @@ DIGIT=[0-9]
 <YYINITIAL>"<=" {
   return new Symbol(TokenConstants.LE,yyline,1); 
 }
-<YYINITIAL>"of" {
+<YYINITIAL>[oO][fF] {
   return new Symbol(TokenConstants.OF,yyline,1); 
 }
-<YYINITIAL>"new" {
+<YYINITIAL>[nN][eE][wW] {
   return new Symbol(TokenConstants.NEW,yyline,1);
 }
-<YYINITIAL>"is_void" {
+<YYINITIAL>[iI][sS][vV][oO][iO][dD] {
   return new Symbol(TokenConstants.PLUS,yyline,1); 
 }
 <YYINITIAL>"=" {
@@ -188,19 +188,19 @@ DIGIT=[0-9]
 <YYINITIAL>"}" {
   return new Symbol(TokenConstants.RBRACE,yyline,1); 
 }
-<YYINITIAL>"else" {
+<YYINITIAL>[eE][lL][sS][eE] {
   return new Symbol(TokenConstants.ELSE,yyline,1); 
 }
-<YYINITIAL>"while" {
+<YYINITIAL>[wW][hH][iI][lL][eE] {
   return new Symbol(TokenConstants.WHILE,yyline,1); 
 }
-<YYINITIAL>"esac" {
+<YYINITIAL>[eE][sS][aA][cC] {
   return new Symbol(TokenConstants.ESAC,yyline,1); 
 }
-<YYINITIAL>"let" {
+<YYINITIAL>[lL][eE][tT] {
   return new Symbol(TokenConstants.LET,yyline,1); 
 }
-<YYINITIAL>"then" {
+<YYINITIAL>[tT][hH][eE][nN] {
   return new Symbol(TokenConstants.PLUS,yyline,1); 
 }
 <YYINITIAL>\" {
@@ -237,11 +237,11 @@ DIGIT=[0-9]
   AbstractSymbol symbol = AbstractTable.inttable.addInt(val);
   return new Symbol(TokenConstants.INT_CONST,yyline,1, symbol); 
 }
-<YYINITIAL>"true"|"false" {
-  if (yytext().equals("true")) {
-    return new Symbol(TokenConstants.BOOL_CONST,yyline,1, BoolConst.truebool);
+<YYINITIAL>t[rR][uU][eE]|f[aA][lL][sS][eE] {
+  if (yytext().equalsIgnoreCase("true")) {
+    return new Symbol(TokenConstants.BOOL_CONST,yyline,1, true);
   } else {
-    return new Symbol(TokenConstants.BOOL_CONST,yyline,1, BoolConst.falsebool);
+    return new Symbol(TokenConstants.BOOL_CONST,yyline,1, false);
   }
 }
 <YYINITIAL>[A-Z][_0-9a-zA-Z]* {
