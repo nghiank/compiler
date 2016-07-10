@@ -19,6 +19,8 @@ import java_cup.runtime.Symbol;
     // For assembling string constants
     StringBuffer string_buf = new StringBuffer();
 
+    private int comment_level = 0;
+    private boolean valid_string = true;
     private int curr_lineno = 1;
     int get_curr_lineno() {
         return curr_lineno;
@@ -55,14 +57,14 @@ import java_cup.runtime.Symbol;
 
     switch(yy_lexical_state) {
     case YYINITIAL:
-	/* nothing special to do in the initial state */
-	break;
+      /* nothing special to do in the initial state */
+      break;
     case STRING:
-      System.err.println("EOF in string constant");
-      break;
+      yybegin(YYINITIAL);
+      return new Symbol(TokenConstants.ERROR,yyline,1, "EOF in string constant");
     case COMMENT:
-      System.err.println("EOF in comment");
-      break;
+      yybegin(YYINITIAL);
+      return new Symbol(TokenConstants.ERROR,yyline,1, "EOF in comment");
     }
     return new Symbol(TokenConstants.EOF,yyline,1);
 %eofval}
@@ -72,34 +74,42 @@ import java_cup.runtime.Symbol;
 %state COMMENT,STRING
 %line
 
-COMMENT_TEXT=([^\*\(\n]|[^\(\n]\*[^\)\n]|[^\*\n]\)|\([^\*\n])*
-NON_NEWLINE_SPACE=[\ \f\r\v\t\b]
+COMMENT_TEXT=([^\*\(\)\\]|\*\\\)|\\\(\*|\*\\\)|\(\\\*|\\\*\)|[^\(]\*[^\)]|[^\*]\)|\([^\*]|[^\(]\*[^\)])
+INLINE_COMMENT=--.*\n
+NON_NEWLINE_SPACE=[\ \f\r\t\b]
 DIGIT=[0-9]
 
 %%
 
+<YYINITIAL>{NON_NEWLINE_SPACE}+ {
+  //System.out.println("space:"+ yytext());
+}
 <YYINITIAL,COMMENT>\n {}
 <YYINITIAL>"*)" {
-  System.out.println("Unmatched *)");
+  /* System.err.println("Unmatched *)"); */
+  return new Symbol(TokenConstants.ERROR,yyline,1, "Unmatched *)"); 
 }
-<YYINITIAL>"(*"     {
-  /* System.out.println("start comment state");  */
+<YYINITIAL,COMMENT>"(*"     {
+  /* System.out.println("increase comment state"); */
+  comment_level++;
   yybegin(COMMENT);
 }
-<COMMENT>"*)" {
-  /* System.out.println("finish comment state");  */
-  yybegin(YYINITIAL);
+<YYINITIAL>{INLINE_COMMENT} {
 }
-<COMMENT>{COMMENT_TEXT} {
- // System.out.println("found some comment:" + yytext()); 
+<COMMENT>"*)" {
+  --comment_level;
+  /* System.out.println("decrease comment state"); */
+  if (comment_level == 0) {
+    yybegin(YYINITIAL);
+  }
+}
+<COMMENT>{COMMENT_TEXT}* {
+  /* System.out.println("found some comment:" + yytext()+ Integer.toString(yytext().length()));   */
 }
 <YYINITIAL>"=>"			{ /* Sample lexical rule for "=>" arrow.
                                      Further lexical rules should be defined
                                      here, after the last %% separator */
   return new Symbol(TokenConstants.DARROW,yyline,1); 
-}
-<YYINITIAL>{NON_NEWLINE_SPACE}+ {
-
 }
 <YYINITIAL>[cC][lL][aA][sS][sS] {
   return new Symbol(TokenConstants.CLASS,yyline,1); 
@@ -118,6 +128,9 @@ DIGIT=[0-9]
 }
 <YYINITIAL>":" {
   return new Symbol(TokenConstants.COLON,yyline,1); 
+}
+<YYINITIAL>"@" {
+  return new Symbol(TokenConstants.AT,yyline,1); 
 }
 <YYINITIAL>[iI][nN][hH][eE][rR][iI][tT][sS] {
   return new Symbol(TokenConstants.INHERITS,yyline,1); 
@@ -174,7 +187,7 @@ DIGIT=[0-9]
   return new Symbol(TokenConstants.NEW,yyline,1);
 }
 <YYINITIAL>[iI][sS][vV][oO][iO][dD] {
-  return new Symbol(TokenConstants.PLUS,yyline,1); 
+  return new Symbol(TokenConstants.ISVOID,yyline,1); 
 }
 <YYINITIAL>"=" {
   return new Symbol(TokenConstants.EQ,yyline,1); 
@@ -201,36 +214,62 @@ DIGIT=[0-9]
   return new Symbol(TokenConstants.LET,yyline,1); 
 }
 <YYINITIAL>[tT][hH][eE][nN] {
-  return new Symbol(TokenConstants.PLUS,yyline,1); 
+  return new Symbol(TokenConstants.THEN,yyline,1); 
 }
 <YYINITIAL>\" {
+  /* System.out.println("String started");  */
   string_buf.setLength(0);
-  System.out.println("Start string here"); 
+  valid_string = true;
   yybegin(STRING);
 }
-<STRING>[^\\\"]\n {
-  System.err.println("Unterminated string constant"); 
-  return new Symbol(TokenConstants.ERROR,yyline,1);
+<STRING>\n {
+  String error = "Unterminated string constant"; 
+  yybegin(YYINITIAL);
+  return new Symbol(TokenConstants.ERROR,yyline,1, error);
 }
 <STRING>\0 {
-  System.err.println("String contains null character"); 
-  return new Symbol(TokenConstants.ERROR,yyline,1);
+  String error = "String contains null character"; 
+  valid_string = false;
+  return new Symbol(TokenConstants.ERROR,yyline,1, error);
 }
-<STRING>[^\n\\\"]+ {
-  System.out.println("append:"+yytext()); 
+<STRING>\\ {
   string_buf.append(yytext());
 }
-<STRING>(\\\n)+ {
-}
-<STRING>(\\[^\n\"])+ {
-  System.out.println("append:"+yytext()); 
+<STRING>[^\n\\\"\0]+ {
+/* System.out.println("hello world:" + yytext()); */
+  /* System.out.println("text:"+yytext()+"$");  */
   string_buf.append(yytext());
 }
+<STRING>(\\\") {
+    string_buf.append('"');
+}
+<STRING>(\\\n) {
+    string_buf.append('\n');
+}
+<STRING>(\\[^\n\"\0]) {
+/* System.out.println("hello world:" + yytext()); */
+  if (yytext().equals("\\n")) {
+  /* System.out.println("hello world1:" + yytext()); */
+    string_buf.append('\n');
+  } else if (yytext().equals("\\b")) {
+    string_buf.append('\b');
+  } else if (yytext().equals("\\t")) {
+    string_buf.append('\t');
+  } else if (yytext().equals("\\f")) {
+    string_buf.append('\f');
+  } else {
+    string_buf.append(yytext().charAt(1));
+  /* System.out.println("hello 1:" + yytext()); */
+  }
+}
+
 <STRING>\" {
-  System.out.println("Found string:" + string_buf.toString()); 
   yybegin(YYINITIAL);
-  AbstractSymbol symbol = AbstractTable.stringtable.addString(string_buf.toString(), MAX_STR_CONST);
-  return new Symbol(TokenConstants.STR_CONST,yyline,1, symbol);
+  /* System.out.println("hello 1:" + yytext()); */
+  if (valid_string) {
+    AbstractSymbol symbol = AbstractTable.stringtable.addString(string_buf.toString(), MAX_STR_CONST);
+    return new Symbol(TokenConstants.STR_CONST,yyline,1, symbol);
+  }
 }
 <YYINITIAL>{DIGIT}+ {
   Integer val = Integer.parseInt(yytext());
@@ -248,11 +287,16 @@ DIGIT=[0-9]
   AbstractSymbol symbol = AbstractTable.stringtable.addString(yytext(), MAX_STR_CONST);
   return new Symbol(TokenConstants.TYPEID,yyline,1, symbol);
 }
+<YYINITIAL>"_" {
+  return new Symbol(TokenConstants.ERROR,yyline,1, "_");
+}
+
 <YYINITIAL>[a-z][_0-9a-zA-Z]* {
+//  System.out.println("Objectidd="+ yytext());
   AbstractSymbol symbol = AbstractTable.stringtable.addString(yytext(), MAX_STR_CONST);
   return new Symbol(TokenConstants.OBJECTID,yyline,1, symbol);
 }
+
 . { 
-  System.err.println("LEXER BUG - UNMATCHED: " + yytext()); 
-  System.out.println("LEXER BUG - UNMATCHED: " + yytext()); 
+  System.err.println("LEXER BUG - UNMATCHED: " + yytext() + ":" + Integer.toString(yyline));
 }
