@@ -308,11 +308,14 @@ DIGIT=[0-9]
   yybegin(YYINITIAL);
   /* System.out.println("hello 1:" + yytext()); */
   curr_lineno = yyline + 1;
-  if (valid_string && string_buf.length() <= MAX_STR_CONST) {
-    AbstractSymbol symbol = AbstractTable.stringtable.addString(string_buf.toString(), MAX_STR_CONST);
-    return new Symbol(TokenConstants.STR_CONST,yyline,1, symbol);
-  } else {
-    return new Symbol(TokenConstants.ERROR,yyline,1, "String constant too long");
+  if (valid_string)  {
+  /* System.out.println("hello 1:" + string_buf.length()); */
+    if (string_buf.length() <  MAX_STR_CONST) {
+      AbstractSymbol symbol = AbstractTable.stringtable.addString(string_buf.toString(), MAX_STR_CONST);
+      return new Symbol(TokenConstants.STR_CONST,yyline,1, symbol);
+    } else {
+      return new Symbol(TokenConstants.ERROR,yyline,1, "String constant too long");
+    }
   }
 }
 <YYINITIAL>{DIGIT}+ {
