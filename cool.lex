@@ -84,9 +84,11 @@ DIGIT=[0-9]
 <YYINITIAL>{NON_NEWLINE_SPACE}+ {
   //System.out.println("space:"+ yytext());
 }
-<YYINITIAL,COMMENT>\n {}
+<YYINITIAL,COMMENT>\n {
+}
 <YYINITIAL>"*)" {
   /* System.err.println("Unmatched *)"); */
+  curr_lineno = yyline + 1;
   return new Symbol(TokenConstants.ERROR,yyline,1, "Unmatched *)"); 
 }
 <YYINITIAL,COMMENT>"(*"     {
@@ -109,111 +111,147 @@ DIGIT=[0-9]
 <YYINITIAL>"=>"			{ /* Sample lexical rule for "=>" arrow.
                                      Further lexical rules should be defined
                                      here, after the last %% separator */
+  curr_lineno = yyline + 1;
   return new Symbol(TokenConstants.DARROW,yyline,1); 
 }
 <YYINITIAL>[cC][lL][aA][sS][sS] {
+  curr_lineno = yyline + 1;
   return new Symbol(TokenConstants.CLASS,yyline,1); 
 }
 <YYINITIAL>"*" {
+  curr_lineno = yyline + 1;
   return new Symbol(TokenConstants.MULT,yyline,1); 
 }
 <YYINITIAL>"-" {
+  curr_lineno = yyline + 1;
   return new Symbol(TokenConstants.MINUS,yyline,1); 
 }
 <YYINITIAL>"/" {
+  curr_lineno = yyline + 1;
   return new Symbol(TokenConstants.DIV,yyline,1); 
 }
 <YYINITIAL>"+" {
+  curr_lineno = yyline + 1;
   return new Symbol(TokenConstants.PLUS,yyline,1); 
 }
 <YYINITIAL>":" {
+  curr_lineno = yyline + 1;
   return new Symbol(TokenConstants.COLON,yyline,1); 
 }
 <YYINITIAL>"@" {
+  curr_lineno = yyline + 1;
   return new Symbol(TokenConstants.AT,yyline,1); 
 }
 <YYINITIAL>[iI][nN][hH][eE][rR][iI][tT][sS] {
+  curr_lineno = yyline + 1;
   return new Symbol(TokenConstants.INHERITS,yyline,1); 
 }
 <YYINITIAL>[pP][oO][oO][lL] {
+  curr_lineno = yyline + 1;
   return new Symbol(TokenConstants.POOL,yyline,1); 
 }
 <YYINITIAL>[cC][aA][sS][eE] {
+  curr_lineno = yyline + 1;
   return new Symbol(TokenConstants.CASE,yyline,1); 
 }
 <YYINITIAL>[nN][oO][tT] {
+  curr_lineno = yyline + 1;
   return new Symbol(TokenConstants.NOT,yyline,1); 
 }
 <YYINITIAL>"(" {
+  curr_lineno = yyline + 1;
   return new Symbol(TokenConstants.LPAREN,yyline,1); 
 }
 <YYINITIAL>")" {
+  curr_lineno = yyline + 1;
   return new Symbol(TokenConstants.RPAREN,yyline,1); 
 }
 <YYINITIAL>";" {
+  curr_lineno = yyline + 1;
   return new Symbol(TokenConstants.SEMI,yyline,1); 
 }
 <YYINITIAL>"<" {
+  curr_lineno = yyline + 1;
   return new Symbol(TokenConstants.LT,yyline,1); 
 }
 <YYINITIAL>[iI][nN] {
+  curr_lineno = yyline + 1;
   return new Symbol(TokenConstants.IN,yyline,1);
 }
 <YYINITIAL>"," {
+  curr_lineno = yyline + 1;
   return new Symbol(TokenConstants.COMMA,yyline,1);
 }
 <YYINITIAL>[fF][iI] {
+  curr_lineno = yyline + 1;
   return new Symbol(TokenConstants.FI,yyline,1); 
 }
 <YYINITIAL>[lL][oO][oO][pP] {
+  curr_lineno = yyline + 1;
   return new Symbol(TokenConstants.LOOP,yyline,1); 
 }
 <YYINITIAL>"<-" {
+  curr_lineno = yyline + 1;
   return new Symbol(TokenConstants.ASSIGN,yyline,1); 
 }
 <YYINITIAL>[iI][fF] {
+  curr_lineno = yyline + 1;
   return new Symbol(TokenConstants.IF,yyline,1); 
 }
 <YYINITIAL>"." {
+  curr_lineno = yyline + 1;
   return new Symbol(TokenConstants.DOT,yyline,1); 
 }
 <YYINITIAL>"<=" {
+  curr_lineno = yyline + 1;
   return new Symbol(TokenConstants.LE,yyline,1); 
 }
 <YYINITIAL>[oO][fF] {
+  curr_lineno = yyline + 1;
   return new Symbol(TokenConstants.OF,yyline,1); 
 }
 <YYINITIAL>[nN][eE][wW] {
+  curr_lineno = yyline + 1;
   return new Symbol(TokenConstants.NEW,yyline,1);
 }
 <YYINITIAL>[iI][sS][vV][oO][iO][dD] {
+  curr_lineno = yyline + 1;
   return new Symbol(TokenConstants.ISVOID,yyline,1); 
 }
 <YYINITIAL>"=" {
+  curr_lineno = yyline + 1;
   return new Symbol(TokenConstants.EQ,yyline,1); 
 }
 <YYINITIAL>"~" {
+  curr_lineno = yyline + 1;
   return new Symbol(TokenConstants.NEG,yyline,1); 
 }
 <YYINITIAL>"{" {
+  curr_lineno = yyline + 1;
   return new Symbol(TokenConstants.LBRACE,yyline,1); 
 }
 <YYINITIAL>"}" {
+  curr_lineno = yyline + 1;
   return new Symbol(TokenConstants.RBRACE,yyline,1); 
 }
 <YYINITIAL>[eE][lL][sS][eE] {
+  curr_lineno = yyline + 1;
   return new Symbol(TokenConstants.ELSE,yyline,1); 
 }
 <YYINITIAL>[wW][hH][iI][lL][eE] {
+  curr_lineno = yyline + 1;
   return new Symbol(TokenConstants.WHILE,yyline,1); 
 }
 <YYINITIAL>[eE][sS][aA][cC] {
+  curr_lineno = yyline + 1;
   return new Symbol(TokenConstants.ESAC,yyline,1); 
 }
 <YYINITIAL>[lL][eE][tT] {
+  curr_lineno = yyline + 1;
   return new Symbol(TokenConstants.LET,yyline,1); 
 }
 <YYINITIAL>[tT][hH][eE][nN] {
+  curr_lineno = yyline + 1;
   return new Symbol(TokenConstants.THEN,yyline,1); 
 }
 <YYINITIAL>\" {
@@ -225,11 +263,13 @@ DIGIT=[0-9]
 <STRING>\n {
   String error = "Unterminated string constant"; 
   yybegin(YYINITIAL);
+  curr_lineno = yyline + 1;
   return new Symbol(TokenConstants.ERROR,yyline,1, error);
 }
 <STRING>\0 {
   String error = "String contains null character"; 
   valid_string = false;
+  curr_lineno = yyline + 1;
   return new Symbol(TokenConstants.ERROR,yyline,1, error);
 }
 <STRING>\\ {
@@ -266,16 +306,19 @@ DIGIT=[0-9]
 <STRING>\" {
   yybegin(YYINITIAL);
   /* System.out.println("hello 1:" + yytext()); */
+  curr_lineno = yyline + 1;
   if (valid_string) {
     AbstractSymbol symbol = AbstractTable.stringtable.addString(string_buf.toString(), MAX_STR_CONST);
     return new Symbol(TokenConstants.STR_CONST,yyline,1, symbol);
   }
 }
 <YYINITIAL>{DIGIT}+ {
+  curr_lineno = yyline + 1;
   AbstractSymbol symbol = AbstractTable.stringtable.addString(yytext());
   return new Symbol(TokenConstants.INT_CONST,yyline,1, symbol); 
 }
 <YYINITIAL>t[rR][uU][eE]|f[aA][lL][sS][eE] {
+  curr_lineno = yyline + 1;
   if (yytext().equalsIgnoreCase("true")) {
     return new Symbol(TokenConstants.BOOL_CONST,yyline,1, true);
   } else {
@@ -283,20 +326,24 @@ DIGIT=[0-9]
   }
 }
 <YYINITIAL>[A-Z][_0-9a-zA-Z]* {
+  curr_lineno = yyline + 1;
   AbstractSymbol symbol = AbstractTable.stringtable.addString(yytext(), MAX_STR_CONST);
   return new Symbol(TokenConstants.TYPEID,yyline,1, symbol);
 }
 <YYINITIAL>"_" {
+  curr_lineno = yyline + 1;
   return new Symbol(TokenConstants.ERROR,yyline,1, "_");
 }
 
 <YYINITIAL>[a-z][_0-9a-zA-Z]* {
+  curr_lineno = yyline + 1;
 //  System.out.println("Objectidd="+ yytext());
   AbstractSymbol symbol = AbstractTable.stringtable.addString(yytext(), MAX_STR_CONST);
   return new Symbol(TokenConstants.OBJECTID,yyline,1, symbol);
 }
 
 . { 
-  return new Symbol(TokenConstants.ERROR,yyline,1, yytext());
-  /* System.err.println("LEXER BUG - UNMATCHED: " + yytext() + ":" + Integer.toString(yyline)); */
+  /* System.out.println("LEXER BUG - UNMATCHED: " + yytext() + ":" + Integer.toString(yyline)); */
+  curr_lineno = yyline + 1;
+  return new Symbol(TokenConstants.ERROR,yyline,2, yytext());
 }
