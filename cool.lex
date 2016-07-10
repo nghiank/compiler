@@ -74,7 +74,7 @@ import java_cup.runtime.Symbol;
 %state COMMENT,STRING
 %line
 
-COMMENT_TEXT=([^\*\(\)\\]|\*\\\)|\\\(\*|\*\\\)|\(\\\*|\\\*\)|[^\(]\*[^\)]|[^\*]\)|\([^\*]|[^\(]\*[^\)])
+COMMENT_TEXT=(\\[^\*\)\(]|[^\*\(\)\\]|\*\\\)|\\\(\*|\*\\\)|\(\\\*|\\\*\)|[^\(]\*[^\)]|[^\*]\)|\([^\*]|[^\(]\*[^\)])
 INLINE_COMMENT=--.*\n
 NON_NEWLINE_SPACE=[\ \f\r\t\b]
 DIGIT=[0-9]
@@ -297,5 +297,6 @@ DIGIT=[0-9]
 }
 
 . { 
-  System.err.println("LEXER BUG - UNMATCHED: " + yytext() + ":" + Integer.toString(yyline));
+  return new Symbol(TokenConstants.ERROR,yyline,1, yytext());
+  /* System.err.println("LEXER BUG - UNMATCHED: " + yytext() + ":" + Integer.toString(yyline)); */
 }
