@@ -272,8 +272,7 @@ DIGIT=[0-9]
   }
 }
 <YYINITIAL>{DIGIT}+ {
-  Integer val = Integer.parseInt(yytext());
-  AbstractSymbol symbol = AbstractTable.inttable.addInt(val);
+  AbstractSymbol symbol = AbstractTable.stringtable.addString(yytext());
   return new Symbol(TokenConstants.INT_CONST,yyline,1, symbol); 
 }
 <YYINITIAL>t[rR][uU][eE]|f[aA][lL][sS][eE] {
