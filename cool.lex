@@ -267,10 +267,11 @@ DIGIT=[0-9]
   curr_lineno = yyline + 1;
   return new Symbol(TokenConstants.ERROR,yyline,1, error);
 }
-<STRING>\0 {
+<STRING>\0.*\n {
   String error = "String contains null character"; 
   valid_string = false;
   curr_lineno = yyline + 1;
+  yybegin(YYINITIAL);
   return new Symbol(TokenConstants.ERROR,yyline,1, error);
 }
 <STRING>\\ {
