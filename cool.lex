@@ -74,7 +74,8 @@ import java_cup.runtime.Symbol;
 %state COMMENT,STRING
 %line
 
-COMMENT_TEXT=(\\[^\*\)\(]|[^\*\(\)\\]|\*\\\)|\\\(\*|\*\\\)|\(\\\*|\\\*\)|[^\(]\*[^\)]|[^\*]\)|\([^\*]|[^\(]\*[^\)])
+COMMENT_TEXT=(\\[^\*\)\(]|[^\*\(\)\\]|\*\\\)|\\\(\*|\*\\\)|\(\\\*|\\\*\)|[^\(]\*[^\)\*]|[^\*]\)|\([^\*]|\*+[^\*\)])
+
 INLINE_COMMENT=--.*\n
 NON_NEWLINE_SPACE=[\ \f\r\t\b]
 DIGIT=[0-9]
@@ -86,7 +87,7 @@ DIGIT=[0-9]
 }
 <YYINITIAL,COMMENT>\n {
 }
-<YYINITIAL>"*)" {
+<YYINITIAL>"*)") {
   /* System.err.println("Unmatched *)"); */
   curr_lineno = yyline + 1;
   return new Symbol(TokenConstants.ERROR,yyline,1, "Unmatched *)"); 
@@ -98,7 +99,7 @@ DIGIT=[0-9]
 }
 <YYINITIAL>{INLINE_COMMENT} {
 }
-<COMMENT>"*)" {
+<COMMENT>\*+\) {
   --comment_level;
   /* System.out.println("decrease comment state"); */
   if (comment_level == 0) {
@@ -106,7 +107,7 @@ DIGIT=[0-9]
   }
 }
 <COMMENT>{COMMENT_TEXT}* {
-  /* System.out.println("found some comment:" + yytext()+ Integer.toString(yytext().length()));   */
+  /* System.out.println("found some comment:" + yytext()+ "->length=" + Integer.toString(yytext().length()));   */
 }
 <YYINITIAL>"=>"			{ /* Sample lexical rule for "=>" arrow.
                                      Further lexical rules should be defined
@@ -307,9 +308,11 @@ DIGIT=[0-9]
   yybegin(YYINITIAL);
   /* System.out.println("hello 1:" + yytext()); */
   curr_lineno = yyline + 1;
-  if (valid_string) {
+  if (valid_string && string_buf.length() <= MAX_STR_CONST) {
     AbstractSymbol symbol = AbstractTable.stringtable.addString(string_buf.toString(), MAX_STR_CONST);
     return new Symbol(TokenConstants.STR_CONST,yyline,1, symbol);
+  } else {
+    return new Symbol(TokenConstants.ERROR,yyline,1, "String constant too long");
   }
 }
 <YYINITIAL>{DIGIT}+ {
