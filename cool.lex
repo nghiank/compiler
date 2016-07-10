@@ -77,7 +77,7 @@ import java_cup.runtime.Symbol;
 COMMENT_TEXT=(\\[^\*\)\(]|[^\*\(\)\\]|\*\\\)|\\\(\*|\*\\\)|\(\\\*|\\\*\)|[^\(]\*[^\)\*]|[^\*]\)|\([^\*]|\*+[^\*\)])
 
 INLINE_COMMENT=--.*\n?
-NON_NEWLINE_SPACE=[\ \f\r\t\b]
+NON_NEWLINE_SPACE=[\ \f\r\t\b\013]
 DIGIT=[0-9]
 
 %%
